@@ -798,7 +798,7 @@ class Site {
         redir("admin/rounds", true);
     }
 
-    function admin_results_browse() {
+    static function admin_results_browse() {
         head("Game Results");
         echo browse_table("select concat(r.rid, '-', pw, '-', pb), r.result,
                 pw.name as white, pb.name as black, report_date as date
