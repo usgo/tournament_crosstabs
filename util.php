@@ -278,8 +278,6 @@ function fetch_result($select, $row=0, $field=0) {
     mysqli_data_seek($res, $row);
     $row_result = mysqli_fetch_row($res);
 
-    var_dump("row_result");
-
     return $row_result[$field];
 }
 
@@ -307,24 +305,31 @@ function insert_row($table, $values) {
 
 function update_rows($table, $values, $where) {
     list($safe_keys, $safe_values) = get_safe_values($values);
-    $query = "update `" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $table) . "` set ";
-    for ($i = 0; $i < count($safe_keys); $i++)
+    $table = mysqli_real_escape_string($GLOBALS['mysqli_link'], $table);
+    $query = "update `" . $table . "` set ";
+
+    for ($i = 0; $i < count($safe_keys); $i++) {
         $query .= $safe_keys[$i] . "=" . $safe_values[$i] . ", ";
+    }
+
     $query = preg_replace("/, $/", "", $query);
     $query .= " where $where ";
+
     mysqli_query($GLOBALS['mysqli_link'], $query);
 }
 
 function delete_rows($table, $where="") {
-    $query = "delete from `" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $table) . "`" .
-        ($where ? " where $where" : "");
-    print_r($query);
+    $table = mysqli_real_escape_string($GLOBALS['mysqli_link'], $table);
+    $query = "delete from `" . $table . "`" . ($where ? " where $where" : "");
+
     mysqli_query($GLOBALS['mysqli_link'], $query);
 }
 
 function get_checkboxes($rows, $name, $value, $text, $checked_field="") {
     if (!$checked_field) $checked_field = $value;
+
     $retval = "";
+
     foreach ($rows as $row) {
         $retval .= "<div>" .
             "<input name='${name}[]' type='checkbox' id='cb-" . $row[$value] . "'" .
@@ -333,18 +338,24 @@ function get_checkboxes($rows, $name, $value, $text, $checked_field="") {
             "<label for='cb-" . $row[$value] . "'>" . $row[$text] . "</label>" .
             "</div>";
     }
+
     return $retval;
 }
 
 function get_select($rows, $name, $value, $text, $default="", $selected_field="") {
     $retval = "<select id='$name' name='$name'>";
+
     if ($default)
         $retval .= "<option value=''>$default</option>";
-    foreach ($rows as $row)
+
+    foreach ($rows as $row) {
         $retval .= "<option value='" . $row[$value] . "'" .
             ($row[$selected_field] ? " selected" : "") . ">" .
             $row[$text] . "</option>";
+    }
+
     $retval .= "</select>";
+
     return $retval;
 }
 
