@@ -74,7 +74,7 @@ function dispatch($site_class) {
         header("HTTP/1.0 404 Not Found");
         die("<h1>Not Found</h1><p>The method \"" . htmlentities($method) . "\" cannot be found.</p>");
     } else {
-        call_user_func_array(array('Site', $method), (array)$params);
+        call_user_func_array(array($site_class, $method), (array)$params);
     }
 }
 

@@ -30,7 +30,7 @@ class Site {
     var $protected = array(
         "admin" => array("username" => ADMIN_USERNAME, "password" => ADMIN_PASSWORD));
 
-    function home() {
+    static function home() {
         head();
         echo "<h2>AGA Tournament Crosstabs</h2>
             <p>Current standings:</p>
