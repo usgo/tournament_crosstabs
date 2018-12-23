@@ -4,8 +4,6 @@ include(dirname(__FILE__) . "/util.php");
 
 connect();
 
-
-
 dispatch("Site");
 
 //////////////////////////////////////////////////////////////////////////////
@@ -121,14 +119,14 @@ class Site {
     }
 
     // Save a game result's SGF and insert details into the DB
-    function results_add($values) {
+    static function results_add($values) {
         save_result($values, true);
         redir("rounds/" . $values['rid'], true,
             "<a href='" . href("results/add") . "'>Add another result?</a>");
     }
 
     // Spit out a <select> element of players for a given round
-    function rounds_players_select($rid) {
+    static function rounds_players_select($rid) {
         $players = fetch_rows("select p.pid, p.name
             from players p join players_to_rounds pr on p.pid=pr.pid and pr.rid='$rid'
             order by name");
@@ -148,13 +146,13 @@ class Site {
             </ul>");
     }
 
-    function admin_results_add_form() {
+    static function admin_results_add_form() {
         head("Report Result");
         result_form("admin/results/add");
         foot();
     }
 
-    function admin_results_add($values) {
+    static function admin_results_add($values) {
         save_result($values, true);
         redir("admin/results", true,
             "<a href='" . href("admin/results/add") . "'>Add another result?</a>");
@@ -711,10 +709,11 @@ class Site {
             left join players_to_rounds pr on p.pid=pr.pid and pr.rid='$rid'
             order by p.name");
         head("Round: " . $round['date_range'] . ", Band " . $round['band']);
+
         ?>
         <form action='<?=href("admin/rounds/$rid/edit")?>' method='post'>
         <div>Name:</div>
-        <input type="text" name="name" size="20" value='<?=$round['name']?>'>
+        <input type="text" name="name" size="20" value='<?=$round['name'];?>'>
         <div>Begin date:</div>
         <input type="text" name="begins" size="10" value='<?=$round['begins']?>'> <span>YYYY-MM-DD</span>
         <div>End date:</div>

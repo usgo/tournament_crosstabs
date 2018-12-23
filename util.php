@@ -276,7 +276,9 @@ function fetch_result($select, $row=0, $field=0) {
     // Emulate the function of mysql_result($res, $row, $field)
     // Convert mysql_result function.
     mysqli_data_seek($res, $row);
-    $row_result = mysqli_fetch_array($res);
+    $row_result = mysqli_fetch_row($res);
+
+    var_dump("row_result");
 
     return $row_result[$field];
 }
