@@ -665,7 +665,7 @@ class Site {
     }
 
     // Show form to add a new band
-    function admin_bands_add_form() {
+    static function admin_bands_add_form() {
         head("Add Band");
         ?>
         <form action="<?=href("admin/bands/add")?>" method="post">
