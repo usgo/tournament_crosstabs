@@ -160,7 +160,7 @@ class Site {
             "<a href='" . href("admin/results/add") . "'>Add another result?</a>");
     }
 
-    function admin_import_add_form($values) {
+    static function admin_import_add_form($values) {
         head("Import Results");
         if ($GLOBALS['feedback'])
             echo "<div id='error'>" . htmlentities($GLOBALS['feedback']) . "</div>";
