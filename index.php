@@ -99,7 +99,7 @@ class Site {
     }
 
     // Display a game's SGF using EidoGo
-    function results_view($ids) {
+    static function results_view($ids) {
         list($rid, $pw, $pb) = explode("-", $ids);
         $result = fetch_row("select r.result, pw.name as white, pb.name as black,
             r.sgf, r.report_date as date
@@ -809,7 +809,7 @@ class Site {
         foot();
     }
 
-    function admin_results_view($ids) {
+    static function admin_results_view($ids) {
         list($rid, $pw, $pb) = explode("-", $ids);
         head("Edit Game Result");
         $result = fetch_row("select pw, pb, rid, result, points, sgf, report_date
