@@ -687,7 +687,7 @@ class Site {
     }
 
     // Show all rounds for admin editing
-    function admin_rounds_browse() {
+    static function admin_rounds_browse() {
         content(
             "Rounds",
             "<p><a href='" . href("admin/rounds/add") . "'>Add Round</a></p>" .
@@ -787,7 +787,7 @@ class Site {
     }
 
     // Insert band details and players into the DB
-    function admin_rounds_add($values) {
+    static function admin_rounds_add($values) {
         $rid = insert_row("rounds", array(
             "bid" => $values['bid'],
             "name" => $values['name'],

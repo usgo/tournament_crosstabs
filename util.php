@@ -267,19 +267,18 @@ function fetch_rows($select) {
 }
 
 function fetch_result($select, $row=0, $field=0) {
+    // Store the query result for mysqli_link.
     $res = mysqli_query($GLOBALS['mysqli_link'], $select);
+
+    // If the result has nothing return null.
     if (!$res) return null;
-    // return mysqli_result($link, $res, $row, $field);
 
     // Emulate the function of mysql_result($res, $row, $field)
     // Convert mysql_result function.
-    // Get MySQL Pointing to the correct row.
-    // Finally get the data from from field 0.
     mysqli_data_seek($res, $row);
-    $fetch_array = mysqli_fetch_array($res, MYSQLI_NUM);
-    $field_res = $fetch_array[$field];
-
-    return $field_res;
+    $row_result = mysqli_fetch_array($res);
+    
+    return $row_result[$field];
 }
 
 function get_safe_values($values) {
