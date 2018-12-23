@@ -601,7 +601,7 @@ class Site {
     }
 
     // Show all bands for admin editing
-    function admin_bands_browse() {
+    static function admin_bands_browse() {
         content(
             "Bands",
             "<p><a href='" . href("admin/bands/add") . "'>Add Band</a></p>" .
