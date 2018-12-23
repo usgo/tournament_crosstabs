@@ -698,7 +698,7 @@ class Site {
 
     // Show players for a band, with options to activate/deactivate them using
     // checkboxes
-    function admin_rounds_view($rid) {
+    static function admin_rounds_view($rid) {
         $round = fetch_row("select r.name as name, concat(date_format(begins, '%c/%e'), ' - ',
             date_format(ends, '%c/%e')) as date_range, r.*, b.name as band
             from rounds r join bands b on r.bid=b.bid
