@@ -1,11 +1,4 @@
 <?php
-
-function connect($host, $db, $user, $pass) {
-    $dbc = @mysql_connect($host, $user, $pass, true);
-    if (!$dbc) die(mysql_error());
-    mysql_select_db($db, $dbc);
-}
-
 // Dispatch to a phtml page or to a class method or die
 function dispatch($site_class) {
     $in_path = $_REQUEST['path'];
@@ -13,13 +6,13 @@ function dispatch($site_class) {
     if (!$path[0]) $method = "home";
     else $method = $path[0];
     $params = count($path) == 1 ? null : array_slice($path, 1);
-    
+
     // .phtml page?
     if (file_exists($method . ".phtml")) {
         include($method . ".phtml");
         return;
     }
-    
+
     // Special method suffixes for defined resources:
     //      foobars -- browse
     //      foobars/add (GET) -- add_form
@@ -55,7 +48,7 @@ function dispatch($site_class) {
         else
             $method .= "_view";
     }
-    
+
     // Password protection
     if (!$_SERVER['PHP_AUTH_USER']) {
         $auth_data = either($_SERVER['REDIRECT_REMOTE_USER'], $_SERVER['REMOTE_USER']);
@@ -74,7 +67,7 @@ function dispatch($site_class) {
             exit;
         }
     }
-    
+
     // Hand off to class method
     $method = str_replace("-", "_", $method);
     if (!in_array($method, get_class_methods($site_class))) {
@@ -82,7 +75,7 @@ function dispatch($site_class) {
         die("<h1>Not Found</h1><p>The method \"" . htmlentities($method) . "\" cannot be found.</p>");
     } else {
         call_user_func_array(array('Site', $method), (array)$params);
-    }    
+    }
 }
 
 function either($a, $b) {
@@ -141,21 +134,21 @@ function content($title, $content) {
  * Sorts an array of assoc arrays (e.g., database rows) by any number of
  * columns and directions (SORT_ASC, SORT_DESC, SORT_REGULAR, SORT_NUMERIC,
  * SORT_STRING). Examples:
- * 
+ *
  *     $rows = array(
  *         array("foo" => 1, "bar" => "Widget waxy woddle"),
  *         array("foo" => 11, "bar" => "Borp dorp da doo"),
  *         ...);
  *     sort_rows($rows, "foo");
  *     sort_rows($rows, "foo", SORT_STRING, SORT_DESC, "bar");
- * 
+ *
  * Any string values will be lower-cased to force case-insensitive sorts.
- * 
+ *
  * Will sort by the first column if no columns are specified, and use SORT_ASC
  * for direction if none is specified.
- * 
+ *
  * Returns false when there's a problem, otherwise true.
- * 
+ *
  * This isn't perfectly efficient (traverses the array at least twice, creates
  * a temporary array for each sort column) but since it uses the built-in
  * array_multisort(), it's still much faster than a usort()-based approach.
@@ -186,13 +179,13 @@ function sort_rows(&$rows) {
         if (!isset($cols_to_dirs[$curcol]))
             $cols_to_dirs[$curcol][] = SORT_ASC;
     }
-    
+
     $col_arrs = array();
     foreach ($rows as $idx => $row)
         foreach ($cols as $col)
             $col_arrs[$col][$idx] = (is_string($row[$col]) ?
                 strtolower($row[$col]) : $row[$col]);
-    
+
     $multisort_args = array();
     $sort_asc = SORT_ASC; // hack needed for PHP 5.3
     foreach ($cols as $idx => $col) {
@@ -339,7 +332,7 @@ function damn_magic_quotes_to_hell() {
     	strip_recursive($_POST);
     	strip_recursive($_COOKIE);
     	strip_recursive($_REQUEST);
-    }  
+    }
 }
 
 damn_magic_quotes_to_hell();

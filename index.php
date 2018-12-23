@@ -1,8 +1,15 @@
 <?php
-include("util.php");
-include("conf.php");
+include(dirname(__FILE__) . "/conf.php");
+include(dirname(__FILE__) . "/util.php");
 
-connect(DB_HOST, DB_NAME, DB_USERNAME, DB_PASSWORD);
+// Store the mysql connection as a link to reference.
+$mysqli_link = mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+// Check the connection for error and die on error.
+if (mysqli_connect_errno()) {
+  die(mysqli_connect_errno());
+}
+
 dispatch("Site");
 
 //////////////////////////////////////////////////////////////////////////////
@@ -10,7 +17,7 @@ dispatch("Site");
 //////////////////////////////////////////////////////////////////////////////
 
 class Site {
-    
+
     var $resources = array(
         "results",
         "players",
@@ -19,10 +26,10 @@ class Site {
         "admin/rounds",
         "admin/bands",
         "admin/import");
-        
+
     var $protected = array(
         "admin" => array("username" => ADMIN_USERNAME, "password" => ADMIN_PASSWORD));
-    
+
     function home() {
         head();
         echo "<h2>AGA Tournament Crosstabs</h2>
@@ -36,7 +43,7 @@ class Site {
         echo "</ul>";
         foot();
     }
-    
+
     // Show results for all rounds in a band
     function band_matrix($bid=null) {
         if (!$bid)
@@ -46,7 +53,7 @@ class Site {
         result_matrix_band($bid);
         foot();
     }
-    
+
     // Show all rounds
     function rounds_browse() {
         content(
@@ -57,7 +64,7 @@ class Site {
                 order by b.name, r.begins desc",
                 "rounds/"));
     }
-    
+
     // Show result matrix for the most current rounds (one per band) or for a
     // specific round
     function rounds_view($rid) {
@@ -85,22 +92,22 @@ class Site {
             "Players",
             browse_table("select pid, name as player from players order by name", "players/"));
     }
-    
+
     function players_view() {
         // TODO: implement and link to this
     }
-    
+
     function results_browse() {
         redir("band-matrix");
     }
-    
+
     // Display a game's SGF using EidoGo
     function results_view($ids) {
         list($rid, $pw, $pb) = explode("-", $ids);
         $result = fetch_row("select r.result, pw.name as white, pb.name as black,
             r.sgf, r.report_date as date
             from results r join players pw on r.pw=pw.pid
-            join players pb on r.pb=pb.pid 
+            join players pb on r.pb=pb.pid
             where r.pw='$pw' and r.pb='$pb' and r.rid='$rid'");
         $sgf = href("sgf/" . htmlentities($result['sgf']));
         head($result['white'] . " (W) vs. " . $result['black'] . " (B)");
@@ -108,21 +115,21 @@ class Site {
         echo "<div class='eidogo-player-auto' sgf='$sgf'></div>";
         foot();
     }
-    
+
     // Add a new game result
     function results_add_form() {
         head("Report Result");
         result_form("results/add");
         foot();
     }
-    
+
     // Save a game result's SGF and insert details into the DB
     function results_add($values) {
         save_result($values, true);
         redir("rounds/" . $values['rid'], true,
             "<a href='" . href("results/add") . "'>Add another result?</a>");
     }
-    
+
     // Spit out a <select> element of players for a given round
     function rounds_players_select($rid) {
         $players = fetch_rows("select p.pid, p.name
@@ -130,7 +137,7 @@ class Site {
             order by name");
         echo get_select($players, "{pids}", "pid", "name", "[Select a player...]");
     }
-    
+
     // Admin front page
     function admin() {
         content(
@@ -143,19 +150,19 @@ class Site {
                 <li><a href='" . href("admin/bands") . "'>Manage Bands</a></li>
             </ul>");
     }
-    
+
     function admin_results_add_form() {
         head("Report Result");
         result_form("admin/results/add");
         foot();
     }
-    
+
     function admin_results_add($values) {
         save_result($values, true);
         redir("admin/results", true,
             "<a href='" . href("admin/results/add") . "'>Add another result?</a>");
     }
-    
+
     function admin_import_add_form($values) {
         head("Import Results");
         if ($GLOBALS['feedback'])
@@ -185,7 +192,7 @@ class Site {
 
     function _import_pytd_xml($bid, $data) {
         $xml = new SimpleXMLElement($data);
-        
+
         $new_players = array(); // Map of player ID -> player record
         foreach ($xml->PLAYERS->PLAYER as $player) {
             $name_parts = explode(", ", (string)$player['name']);
@@ -199,7 +206,7 @@ class Site {
         $old_players = array();
         foreach ($old_player_rows as $old_player_row)
             $old_players[$old_player_row['name']] = $old_player_row;
-        
+
         // Insert any new players that haven't been inserted yet
         $player_count = 0;
         $num = fetch_result("select max(num) from players p, players_to_bands pb
@@ -221,7 +228,7 @@ class Site {
                 "pid" => $pid,
                 "name" => $new_player['name']);
         }
-        
+
         $rounds = array();
         $results = array();
         $round_count = 0;
@@ -279,7 +286,7 @@ class Site {
         $result_count = 0;
 
         $json = json_decode($data, true);
-        
+
         // Import players
         $new_players = array(); // Map of player ID -> player record
         $json_players = $json['players'];
@@ -288,14 +295,14 @@ class Site {
             $name = $player['first_name'] . " " . $player['last_name'];
             $new_players[$player['id']] = array("name" => $name);
         }
-        
+
         // Map of existing player names to records
         $old_player_rows = fetch_rows("select * from players p, players_to_bands pb
             where p.pid=pb.pid and pb.bid='$bid'");
         $old_players = array();
         foreach ($old_player_rows as $old_player_row)
             $old_players[$old_player_row['name']] = $old_player_row;
-        
+
         // Insert any new players that haven't been inserted yet
         $player_count = 0;
         $num = fetch_result("select max(num) from players p, players_to_bands pb
@@ -369,7 +376,7 @@ class Site {
     function _import_opengotha_xml($bid, $data) {
         $xml = new SimpleXMLElement($data);
         var_dump($xml);
-        
+
         $new_players = array(); // Map of player ID -> player record
         foreach ($xml->Players->Player as $player) {
             $id = strtoupper((string)$player['name']) . strtoupper((string)$player['firstName']);
@@ -383,7 +390,7 @@ class Site {
         // $old_players = array();
         // foreach ($old_player_rows as $old_player_row)
         //     $old_players[$old_player_row['name']] = $old_player_row;
-        
+
         // Insert any new players that haven't been inserted yet
         $player_count = 0;
         // $num = fetch_result("select max(num) from players p, players_to_bands pb
@@ -405,7 +412,7 @@ class Site {
         //         "pid" => $pid,
         //         "name" => $new_player['name']);
         // }
-        
+
         // $rounds = array();
         // $results = array();
         $round_count = 0;
@@ -457,13 +464,13 @@ class Site {
         return array($player_count, $round_count, $result_count);
     }
 
-    function _import_aga_txt($bid, $data) {        
+    function _import_aga_txt($bid, $data) {
         $player_count = 0;
         $round_count = 0;
         $result_count = 0;
 
         $lines = explode("\n", $data);
-        
+
         // Import players
         $new_players = array(); // Map of player ID -> player record
         while ($line = next($lines)) {
@@ -487,7 +494,7 @@ class Site {
         $old_players = array();
         foreach ($old_player_rows as $old_player_row)
             $old_players[$old_player_row['name']] = $old_player_row;
-        
+
         // Insert any new players that haven't been inserted yet
         $num = fetch_result("select max(num) from players p, players_to_bands pb
             where p.pid=pb.pid and pb.bid='$bid'");
@@ -565,10 +572,10 @@ class Site {
 
         return array($player_count, $round_count, $result_count);
     }
-    
+
     function admin_import_add($values) {
         $bid = intval($values['bid']);
-        
+
         if ($_FILES['file'] && $_FILES['file']['error'] == 0) {
             $data = file_get_contents($_FILES['file']['tmp_name']);
         } else {
@@ -586,7 +593,7 @@ class Site {
         } else if ($values['type'] === "aga_txt") {
             list($player_count, $round_count, $result_count) = self::_import_aga_txt($bid, $data);
         }
-        
+
         head("Import Complete");
         echo "<p><ul>
             <li>$player_count players imported</li>
@@ -595,7 +602,7 @@ class Site {
             </ul></p>";
         foot();
     }
-    
+
     // Show all bands for admin editing
     function admin_bands_browse() {
         content(
@@ -603,7 +610,7 @@ class Site {
             "<p><a href='" . href("admin/bands/add") . "'>Add Band</a></p>" .
             browse_table("select bid, name as band from bands order by name", "admin/bands/"));
     }
-    
+
     // View a band's players, with option to add new players
     // TODO: ability to remove players from band
     function admin_bands_view($bid, $checkboxes=false) {
@@ -644,7 +651,7 @@ class Site {
         <?php
         foot();
     }
-    
+
     // Delete a player
     function admin_player_delete() {
         $pid = (int)$_POST['pid'];
@@ -653,13 +660,13 @@ class Site {
         delete_rows("players_to_rounds", "pid='$pid'");
         delete_rows("results", "pw='$pid' or pb='$pid'");
     }
-    
+
     // Add new players to a band
     function admin_bands_edit($bid, $values) {
         insert_new_players($bid, $values['new_players']);
         redir("admin/bands/$bid", true);
     }
-    
+
     // Show form to add a new band
     function admin_bands_add_form() {
         head("Add Band");
@@ -674,14 +681,14 @@ class Site {
         <?php
         foot();
     }
-    
+
     // Insert a new band into the DB
     function admin_bands_add($values) {
         $bid = insert_row("bands", array("name" => $values['name']));
         insert_new_players($bid, $values['new_players']);
         redir("admin/bands", true);
     }
-    
+
     // Show all rounds for admin editing
     function admin_rounds_browse() {
         content(
@@ -693,7 +700,7 @@ class Site {
                 order by r.begins desc",
                 "admin/rounds/"));
     }
-    
+
     // Show players for a band, with options to activate/deactivate them using
     // checkboxes
     function admin_rounds_view($rid) {
@@ -724,7 +731,7 @@ class Site {
         <?php
         foot();
     }
-    
+
     // Update a band's player list
     function admin_rounds_edit($rid, $values) {
         update_rows("rounds", array(
@@ -738,7 +745,7 @@ class Site {
         }
         redir("admin/rounds/$rid", true);
     }
-    
+
     // Show form to add a new round
     function admin_rounds_add_form() {
         head("Add Round");
@@ -759,7 +766,7 @@ class Site {
         <div id='players'>[Select a band]</div>
         <input type="submit" value="Add Round">
         </form>
-        
+
         <script>
         (function() {
             function updateCheckboxes(bid) {
@@ -773,7 +780,7 @@ class Site {
         <?php
         foot();
     }
-    
+
     // Spit out checkboxes for players within a given band
     function bands_players_checkboxes($bid) {
         $player_select = "select p.pid, p.name as player
@@ -781,7 +788,7 @@ class Site {
             order by name";
         echo get_checkboxes(fetch_rows($player_select), "pids", "pid", "player");
     }
-    
+
     // Insert band details and players into the DB
     function admin_rounds_add($values) {
         $rid = insert_row("rounds", array(
@@ -793,7 +800,7 @@ class Site {
             insert_row("players_to_rounds", array("pid" => $pid, "rid" => $rid));
         redir("admin/rounds", true);
     }
-    
+
     function admin_results_browse() {
         head("Game Results");
         echo browse_table("select concat(r.rid, '-', pw, '-', pb), r.result,
@@ -804,7 +811,7 @@ class Site {
             "admin/results/");
         foot();
     }
-    
+
     function admin_results_view($ids) {
         list($rid, $pw, $pb) = explode("-", $ids);
         head("Edit Game Result");
@@ -813,12 +820,12 @@ class Site {
         result_form("admin/results/$ids/edit", $result);
         foot();
     }
-    
+
     function admin_results_edit($ids, $values) {
         save_result($values);
         redir("admin/results", true);
     }
-    
+
     function fiximport() {
         $json = json_decode(file_get_contents("usopen_2014_round1.json"), true);
         foreach ($json['players'] as $player) {
@@ -829,7 +836,7 @@ class Site {
                 "rating" => floatval($player['rating']));
         }
         sort_rows($new_players, "rating", SORT_DESC);
-        
+
         $old_player_rows = fetch_rows("select p.pid, p.name, p.num
             from players p join players_to_bands pb on p.pid=pb.pid and pb.bid='169'");
         foreach ($old_player_rows as $op)
@@ -916,9 +923,9 @@ function result_matrix_band($bid) {
         $where
         order by b.name, r.begins desc",
         "rounds/");
-    
+
     $result_matrix = array();
-    
+
     $player_rows = fetch_rows("select p.pid, p.name, p.num
         from players p join players_to_bands pb on p.pid=pb.pid and pb.bid='$bid'");
     $players = array();
@@ -927,7 +934,7 @@ function result_matrix_band($bid) {
     }
     $results = fetch_rows("select re.* from results re join rounds ro on re.rid=ro.rid
         where ro.bid='$bid'");
-    
+
     foreach ($players as $player) {
         $row = array();
         $wins = 0;
@@ -971,7 +978,7 @@ function result_matrix_band($bid) {
         array_unshift($row, $player);
         $result_matrix[] = $row;
     }
-    
+
     if ($_GET['sort'] == "player") {
         usort($result_matrix, create_function('$a, $b',
             'return ($a[0]["num"] > $b[0]["num"]);'));
@@ -981,7 +988,7 @@ function result_matrix_band($bid) {
                 $a[0]["num"] > $b[0]["num"] :
                 $a[0]["wins"] < $b[0]["wins"]);'));
     }
-    
+
     echo "<table class='result-matrix'>";
     echo "<tr><th><a href='?sort=player'>Player</a>" .
         ($_GET['sort'] == "player" ? " &#9650;" : "") . "</th>";
@@ -990,7 +997,7 @@ function result_matrix_band($bid) {
     }
     echo "<th class='score'><a href='?sort=wins'>Wins/Losses</a>" .
         ($_GET['sort'] != "player" ? " &#9660;" : "") . "</th></tr>";
-    
+
     $first_y = true;
     $first_x = true;
 
@@ -1111,19 +1118,19 @@ function result_form($action, $values=array()) {
         <span id='pw-shell'>
         <?=$pw?>
         </span>
-        
+
         <div>Black player:</div>
         <span id='pb-shell'>
         <?=$pb?>
         </span>
-        
+
         <div>Result:</div>
         <select id='result' name='result'>
             <option value='W+'<?=($values['result'] == "W+" ? "selected" : "")?>>White won</option>
             <option value='B+'<?=($values['result'] == "B+" ? "selected" : "")?>>Black won</option>
             <option value='NR'<?=($values['result'] == "NR" ? "selected" : "")?>>No result</option>
         </select>
-        
+
         <div>SGF:</div>
         <?php
             if ($values['sgf'])
@@ -1131,7 +1138,7 @@ function result_form($action, $values=array()) {
                     htmlentities($values['sgf']) . "</a><br>";
         ?>
         <input type="file" name="sgf">
-        
+
         <input type='submit' value='Submit'>
     </form>
     <?php if (!$values['pw'] && !$values['pb']) { ?>
