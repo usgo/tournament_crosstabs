@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<?php $theme_dir = $_SERVER['DOCUMENT_ROOT'] . 'theme/'; ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <?php require($theme_dir . "includes/meta.html"); ?>
+        <title>Welcome to the American Go Association</title>
+        <?php require($theme_dir . "includes/head.html"); ?>
+        <link rel="stylesheet" type="text/css" href="/theme/style/right_col.css" />
+		<script type="text/javascript" src="jquery.js"></script>
+		<script>
+		eidogoConfig = {enableShortcuts: true};
+		</script>
+		<script type="text/javascript" src="http://eidogo.com/player/js/all.compressed.js"></script>
+    </head>
+    <body>
+        <div id="header">
+            <?php require($theme_dir . "includes/header.html"); ?>
+            <div id="navwrap">
+                <?php require($theme_dir . "includes/navbar.html"); ?>
+            </div>
+        </div>
+        <div id="container">
+            <div id="fauxcolbgR" class="containfloats">
+                <div id="contentwrapper">
+                    <div id="content">

@@ -1,0 +1,543 @@
+/*
+ * Copyright 2010-2011, Joshua Simmons
+ */
+
+html, body, h1, h2, h3, h4, h5, h6, p, ol, ul, li, pre, code, address, var, form, fieldset, blockquote {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    font-weight: normal;
+}
+
+abbr,
+acronym {
+    border: none;
+}
+
+blockquote {
+    margin-left: 0.75em;
+    padding-left: 0.75em;
+    border-left: 1px dotted black;
+}
+
+hr {
+    color: black;
+    background-color: black;
+    height: 3px;
+    width: 85%;
+    margin: 1.5em auto;
+    clear: both;
+}
+
+ol {
+    margin-left: 2em;
+    list-style: decimal;
+}
+
+ul {
+    margin-left: 1.4em;
+    list-style: square;
+}
+
+img {
+    border: 2px solid black;
+}
+
+img.graphic {
+    border: none;
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+}
+
+img.aligncenter {
+	display: block;
+    margin: 10px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+img.alignleft {
+	float: left;
+    margin: 10px;
+    margin-left: 0 !important;
+}
+
+img.alignright {
+	float: right;
+    margin: 10px;
+    margin-right: 0 !important;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 2px solid black;
+}
+
+caption {
+    caption-side: bottom;
+    text-align: right;
+    font-style: italic;
+}
+
+td {
+    padding: 3px;
+}
+
+th {
+    background: #b3b38f;
+    padding: 5px;
+}
+
+tr.even {
+    background: #d6ffcc;
+}
+tr.odd {
+    background: #d3d3af;
+}
+tr:nth-child(even) {
+    background: #d6ffcc;
+}
+tr:nth-child(odd) {
+    background: #d3d3af;
+}
+
+#content {
+    min-height: 600px;
+}
+
+#content form, 
+#content table, 
+#content ol, 
+#content ul {
+    margin-top: .5em;
+    margin-bottom: .5em;
+}
+
+body {
+    color: #000;
+    background: #a14a14 url('../images/gradient_bg.png') repeat-y left top;
+    font-family: Arial, Helvetica, Verdana, sans-serif;
+    font-size: 12px;
+    min-width: 760px;
+}
+
+html {
+    background: white;
+}
+
+#content {
+    font-size: 13px;
+}
+
+#content p {
+    margin: 10px 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: .5em;
+    margin-bottom:.5em;
+}
+
+h1 { font-size: 2em; }
+h2 { font-size: 1.5em; }
+h3 { font-size: 1.3em; }
+h4 { font-size: 1.15em; }
+h5 { font-size: 1.0em; }
+h6 { font-size: 0.8em; }
+
+a:link,
+a:visited {
+    color: #654c19;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+h1 a:link, h1 a:visited,
+h2 a:link, h2 a:visited,
+h3 a:link, h3 a:visited {
+    color: black;
+    text-decoration: none;
+}
+
+h1 a:hover,
+h2 a:hover,
+h3 a:hover {
+    color: black;
+    text-decoration: underline;
+}
+
+#header {
+    height: 130px;
+    background: transparent url("../images/goban_bg.png") no-repeat;
+    background-position: top right;
+
+    margin-top: -1px;
+    border-top: 1px solid white;
+}
+
+#header img {
+    border: none;
+}
+
+#ie6note {
+    width: 250px;
+    height: 30px;
+    color: white;
+    background: black;
+    position: absolute;
+    left: 150px;
+    top: 10px;
+    padding: 5px;
+    text-align: center;
+}
+
+#ie6note h2 {
+    margin: 5px auto;
+    color: red;
+}
+
+#ie6note a {
+    color: red;
+}
+
+#logo {
+    margin: 0;
+    padding: 0;
+    float: left;
+    border: 0;
+}
+
+#logo img {
+    padding: 2px 0 0 1px;
+    margin: 5px;
+    margin-bottom: 0;
+}
+
+#pagetitle {
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+#navwrap {
+    height: 16px;
+    margin-top: 100px;
+    padding: 6px 0;
+    background: black;
+    border: 1px solid black;
+    display: block;
+}
+
+.navbar {
+    float: right;
+    list-style-type: none;
+    font-size: 14px;
+}
+
+.navbar li {
+    display: inline;
+    padding: 0 7px;
+    border-left: 1px solid white;
+}
+
+.navbar li:first-child {
+    border-left: 0;
+}
+
+.navbar a:link,
+.navbar a:visited {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+.mainnav {
+    font-size: 1.2em;
+    margin: 0;
+    font-family: Helvetica, Verdana, Arial, sans-serif;
+}
+
+.mainnav li {
+    font-variant: small-caps;
+    list-style-type: none;
+}
+
+.mainnav li li {
+    font-size: .9em;
+}
+
+.mainnav li li li {
+    font-size: .75em;
+}
+
+.mainnav ul {
+    padding-left: 1.5em;
+    margin: 0;
+}
+
+.mainnav .opener {
+    cursor: default;
+}
+
+.mainnav a,
+.mainnav .opener {
+    display: block;
+    text-decoration: none;
+    padding: 2px 0px 2px 10px;
+    color: #000;
+}
+
+.mainnav a:hover {
+    text-decoration: underline;
+}
+
+#navcol .search {
+    width: 150px;
+    margin: 15px auto;
+    display: block;
+}
+
+.searchbox {
+    padding-left: 20px;
+    background: white url('../images/search.png') no-repeat 2px center;
+    color: black;
+    border: 1px solid black;
+}
+
+#navcol .searchbox {
+    width: 130px;
+    margin: 0 auto;
+    display: block;
+}
+
+.searchbutton {
+    display: block;
+    margin: 2px auto;
+    width: 5em;
+}
+
+#extracol .search {
+    width: 146px;
+    margin: 0 auto;
+    display: block;
+}
+
+#extracol .searchbox {
+    width: 126px;
+    margin: 0 auto;
+    display: block;
+}
+
+#bbls,
+#bbls a,
+#bbls img {
+    display: block;
+    margin: 0 auto;
+}
+
+#extracol #newsHL {
+    border-bottom: 1px solid green;
+}
+
+#extracol h2 {
+    margin: 0px;
+    margin-top: 10px;
+    padding: 10px;
+    padding-top: 0;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+#news {
+    list-style-type: none;
+    margin: 0;
+    margin-bottom: 30px;
+}
+
+#news li {
+    border-bottom: 1px solid green;
+}
+
+#news a:link,
+#news a:visited {
+    text-decoration: none;
+    color: #000;
+    display: block;
+    margin: 0;
+    padding: 10px 5px;
+}
+
+#news .rss {
+    background-image: url('../images/rss.png');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+
+#news a:hover {
+    background: #b3b38f;
+}
+
+#news a:hover span {
+    text-decoration: underline;
+}
+
+#news {
+    text-align: justify;
+}
+
+#news span {
+    display: block;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+}
+
+#footer {
+    clear: both;
+    display: block;
+    text-align: center;
+    padding: 5px;
+    color: white;
+    border: 1px solid black;
+    background: black;
+}
+
+#footer p {
+    margin: 0;
+    padding: 0;
+}
+
+#postfooter {
+    background: #555;
+    border: 1px solid black;
+    padding: 10px;
+    color: #ddd;
+    min-height: 135px;
+}
+
+#ads {
+    text-align: center;
+    float: left;
+    margin: 0;
+}
+
+#ads h2 {
+    font-size: 1.3em;
+    margin: 0;
+    margin-bottom: 6px;
+}
+
+#ads ul {
+    float: left;
+    text-align: left;
+    list-style-type: none;
+    margin: 0 5px;
+}
+
+#sitelinks {
+    float: right;
+    list-style-type: none;
+    font-size: 1.25em;
+    text-align: right;
+    margin-right: 5px;
+}
+
+#sitelinks li {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+#postfooter a:link,
+#postfooter a:visited,
+#postfooter a:hover {
+    color: #ccc;
+    text-decoration: none;
+}
+
+#postfooter a:hover {
+    text-decoration: underline;
+}
+
+#sitelinks a:link,
+#sitelinks a:visited,
+#sitelinks a:hover {
+    color: #ddd;
+}
+
+fieldset { border: 0; margin: 0; padding: 0; }
+
+/* to keep floats contained inside */
+.containfloats:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.potwpreview img {
+    border: none;
+}
+
+#extracol a.potwpreview,
+#extracol .potwpreview img,
+div.potwproblem a.potwpreview,
+div.potwproblem .potwpreview img {
+    display: block;
+    margin: 0 auto;
+}
+
+div.potwproblem {
+    width: 160px;
+    height: 210px;
+    float: left;
+}
+
+#content div.potwproblem .potwtoplay {
+    margin-top: 5px;
+}
+
+#extracol .potwtoplay,
+div.potwproblem .potwtoplay {
+    text-align: center;
+}
+
+ul.pager li {
+    margin: 0;
+}
+
+table.standingstable {
+}
+
+.standingstable td.expired {
+    text-align: center;
+    background-color: #ffbcbc;
+}
+
+.standingstable td.current {
+    text-align: center;
+    background-color: #baffca;
+}
+
+.standingstable td.name {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    text-align: left;
+}
+
+.standingstable td.number {
+    text-align: center;
+}
+
+#ads {
+    width: 300px;
+}
