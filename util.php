@@ -153,7 +153,7 @@ function content($title, $content) {
  * a temporary array for each sort column) but since it uses the built-in
  * array_multisort(), it's still much faster than a usort()-based approach.
 **/
-function sort_rows(&$rows) {
+function sort_get_safe_valuesrows(&$rows) {
     if (!count($rows) || !is_array($rows[0]))
         return false;
 
@@ -238,33 +238,34 @@ function browse_table($select, $base_href="") {
     return $retval;
 }
 
-function fetch_row($select) {
-    $res = @mysql_query($select);
+function fetch_row($link, $select) {
+    $res = @mysqli_query($link, $select);
     if (!$res) return null;
-    return mysql_fetch_array($res, MYSQL_ASSOC);
+    return mysqli_fetch_array($link, $res, MYSQL_ASSOC);
 }
 
-function fetch_rows($select) {
-    $res = @mysql_query($select);
+function fetch_rows($link, $select) {
+    $res = @mysqli_query($link, $select);
     if (!$res) return array();
     $rows = array();
-    while ($row = mysql_fetch_array($res, MYSQL_ASSOC))
+    while ($row = mysqli_fetch_array($link, $res, MYSQL_ASSOC))
         $rows[] = $row;
     return $rows;
 }
 
-function fetch_result($select, $row=0, $field=0) {
-    $res = @mysql_query($select);
+function fetch_result($link, $select, $row=0, $field=0) {
+    $res = @mysqli_query($link, $select);
     if (!$res) return null;
-    return mysql_result($res, $row, $field);
+    return mysqli_result($res, $row, $field);
 }
 
-function get_safe_values($values) {
-    $safe_keys = array_map("mysql_real_escape_string", array_keys($values));
+function get_safe_values($link, $values) {
+    // $safe_keys = array_map(array($link ,"mysqli_real_escape_string"), array_keys($values));
+    $safe_keys = array_map(array($link ,"mysqli_real_escape_string"), $values);
     $safe_values = array();
     foreach (array_values($values) as $value)
         $safe_values[] = ($value == "now()" ? "now()" :
-            "'" . mysql_real_escape_string($value) . "'");
+            "'" . mysqli_real_escape_string($link, $value) . "'");
     return array($safe_keys, $safe_values);
 }
 
@@ -277,20 +278,20 @@ function insert_row($table, $values) {
     return mysql_insert_id();
 }
 
-function update_rows($table, $values, $where) {
+function update_rows($link, $table, $values, $where) {
     list($safe_keys, $safe_values) = get_safe_values($values);
-    $query = "update `" . mysql_real_escape_string($table) . "` set ";
+    $query = "update `" . mysqli_real_escape_string($link, $table) . "` set ";
     for ($i = 0; $i < count($safe_keys); $i++)
         $query .= $safe_keys[$i] . "=" . $safe_values[$i] . ", ";
     $query = preg_replace("/, $/", "", $query);
     $query .= " where $where";
-    @mysql_query($query);
+    @mysqli_query($link, $query);
 }
 
-function delete_rows($table, $where="") {
+function delete_rows($link, $table, $where="") {
     $query = "delete from `" . mysql_real_escape_string($table) . "`" .
         ($where ? " where $where" : "");
-    @mysql_query($query);
+    @mysqli_query($link, $query);
 }
 
 function get_checkboxes($rows, $name, $value, $text, $checked_field="") {

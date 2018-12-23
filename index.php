@@ -35,7 +35,7 @@ class Site {
         echo "<h2>AGA Tournament Crosstabs</h2>
             <p>Current standings:</p>
             <ul>";
-        $bands = fetch_rows("select bid, name from bands");
+        $bands = fetch_rows($mysqli_link, "select bid, name from bands");
         foreach ($bands as $band) {
             echo "<li><a href='" . href("band-matrix/" . $band['bid']) . "'>" .
                 $band['name'] . "</a></li>";
