@@ -126,9 +126,14 @@ function head($title=null) {
     }
     if ($title) echo "<h2>$title</h2>";
     if ($_REQUEST['success']) {
-        // Directly echoing "extra" isn't strictly secure, but oh well
-        // TODO: improve this
-        echo "<p id='feedback'>Success! " . (either($_REQUEST['extra'], "")) . "</p>";
+        // Clean up any special characters that may come in through a
+        // request. 
+        $extra_request = htmlspecialchars(either($_REQUEST['extra'], ""));
+
+        // Provide the user feed back.
+        // TODO: Make the request test that the event actually was successful,
+        //       and provide feedback on failure.
+        echo "<p id='feedback'>Success! " . $extra_request . "</p>";
     }
 }
 
