@@ -680,7 +680,7 @@ class Site {
     }
 
     // Insert a new band into the DB
-    function admin_bands_add($values) {
+    static function admin_bands_add($values) {
         $bid = insert_row("bands", array("name" => $values['name']));
         insert_new_players($bid, $values['new_players']);
         redir("admin/bands", true);
