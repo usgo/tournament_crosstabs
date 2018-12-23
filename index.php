@@ -119,7 +119,7 @@ class Site {
     }
 
     // Save a game result's SGF and insert details into the DB
-    static function results_add($values) {
+    function results_add($values) {
         save_result($values, true);
         redir("rounds/" . $values['rid'], true,
             "<a href='" . href("results/add") . "'>Add another result?</a>");
@@ -152,7 +152,7 @@ class Site {
         foot();
     }
 
-    static function admin_results_add($values) {
+    function admin_results_add($values) {
         save_result($values, true);
         redir("admin/results", true,
             "<a href='" . href("admin/results/add") . "'>Add another result?</a>");
@@ -787,13 +787,19 @@ class Site {
 
     // Insert band details and players into the DB
     static function admin_rounds_add($values) {
+
+        // Force convert string to time for mysql.
+        $begins = date('Y-m-d H:i:s', strtotime($values['begins']));
+        $ends = date('Y-m-d H:i:s', strtotime($values['ends']));
+
         $rid = insert_row("rounds", array(
             "bid" => $values['bid'],
             "name" => $values['name'],
-            "begins" => $values['begins'],
-            "ends"  => $values['ends']));
-        foreach ($values['pids'] as $pid)
+            "begins" => $begins,
+            "ends"  => $ends));
+        foreach ($values['pids'] as $pid) {
             insert_row("players_to_rounds", array("pid" => $pid, "rid" => $rid));
+        }
         redir("admin/rounds", true);
     }
 
@@ -872,7 +878,9 @@ function result_matrix_round($rid) {
             $orphan_ids[] = $orphan['pid'];
         }
     }
-    usort($players_x, create_function('$a, $b', 'return strcmp($a["name"], $b["name"]);'));
+    // usort($players_x, create_function('$a, $b', 'return strcmp($a["name"], $b["name"]);'));
+    usort($players_x, function($a, $b) { return strcmp($a['name'], $b['name']); });
+
     $players_y = $players_x;
     $results = fetch_rows("select * from results where rid='$rid'");
     echo "<table class='result-matrix'>";
@@ -976,13 +984,19 @@ function result_matrix_band($bid) {
     }
 
     if ($_GET['sort'] == "player") {
-        usort($result_matrix, create_function('$a, $b',
-            'return ($a[0]["num"] > $b[0]["num"]);'));
+        //usort($result_matrix, create_function('$a, $b', 'return ($a[0]["num"] > $b[0]["num"]);'));
+        usort($result_matrix, function($a, $b) {
+          return ($a[0]["num"] > $b[0]["num"]); });
     } else {
-        usort($result_matrix, create_function('$a, $b',
-            'return ($a[0]["wins"] == $b[0]["wins"] ?
+        // usort($result_matrix, create_function('$a, $b',
+        //     'return ($a[0]["wins"] == $b[0]["wins"] ?
+        //         $a[0]["num"] > $b[0]["num"] :
+        //         $a[0]["wins"] < $b[0]["wins"]);'));
+        usort($result_matrix, function($a, $b) {
+          return ($a[0]["wins"] == $b[0]["wins"] ?
                 $a[0]["num"] > $b[0]["num"] :
-                $a[0]["wins"] < $b[0]["wins"]);'));
+                $a[0]["wins"] < $b[0]["wins"]);
+        });
     }
 
     echo "<table class='result-matrix'>";
@@ -1172,4 +1186,6 @@ function save_result($values, $insert=false) {
         update_rows("results", $db_values, "pw='$pw' and pb='$pb' and rid='$rid'");
 }
 
+// close connection
+mysqli_close($GLOBALS['mysqli_link']);
 ?>

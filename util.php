@@ -284,13 +284,8 @@ function fetch_result($select, $row=0, $field=0) {
 }
 
 function get_safe_values($values) {
-    // $safe_keys = array_map(array($link ,"mysqli_real_escape_string"), array_keys($values));
-    // $safe_keys = array_map(array($GLOBALS['mysqli_link'], "real_escape_string"), array_keys($values));
     $safe_values = array();
     $safe_keys = array();
-    // foreach (array_values($values) as $value)
-    //     $safe_values[] = ($value == "now()" ? "now()" :
-    //         "'" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $value) . "'");
     foreach ($values as $key => $value) {
         $safe_values[] = ($value == "now()" ? "now()" : "'" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $value) . "'");
         $safe_keys[] = mysqli_real_escape_string($GLOBALS['mysqli_link'], $key);
@@ -300,10 +295,13 @@ function get_safe_values($values) {
 
 function insert_row($table, $values) {
     list($safe_keys, $safe_values) = get_safe_values($values);
-    $query = "insert into `" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $table) . "`" .
-        " (" . implode(",", $safe_keys) . ")" .
-        " values (" . implode(",", $safe_values) . ")";
-    mysqli_query($GLOBALS['mysqli_link'], $query);
+    $table = mysqli_real_escape_string($GLOBALS['mysqli_link'], $table);
+    $safe_keys = implode(",", $safe_keys);
+    $safe_values = implode(",", $safe_values);
+    $query = "insert into `" . $table . "`" . " (" . $safe_keys . ")" . " values (" . $safe_values. ") ";
+
+    @mysqli_query($GLOBALS['mysqli_link'], $query);
+
     return mysqli_insert_id($GLOBALS['mysqli_link']);
 }
 
@@ -313,7 +311,7 @@ function update_rows($table, $values, $where) {
     for ($i = 0; $i < count($safe_keys); $i++)
         $query .= $safe_keys[$i] . "=" . $safe_values[$i] . ", ";
     $query = preg_replace("/, $/", "", $query);
-    $query .= " where $where";
+    $query .= " where $where ";
     mysqli_query($GLOBALS['mysqli_link'], $query);
 }
 
