@@ -610,7 +610,7 @@ class Site {
 
     // View a band's players, with option to add new players
     // TODO: ability to remove players from band
-    function admin_bands_view($bid, $checkboxes=false) {
+    static function admin_bands_view($bid, $checkboxes=false) {
         $band = fetch_row("select * from bands where bid='$bid'");
         head("Band: " . htmlentities($band['name']));
         echo browse_table(

@@ -277,13 +277,13 @@ function fetch_result($select, $row=0, $field=0) {
     // Convert mysql_result function.
     mysqli_data_seek($res, $row);
     $row_result = mysqli_fetch_array($res);
-    
+
     return $row_result[$field];
 }
 
 function get_safe_values($values) {
     // $safe_keys = array_map(array($link ,"mysqli_real_escape_string"), array_keys($values));
-    $safe_keys = array_map(array($GLOBALS['mysqli_link'], "real_escape_string"), $values);
+    $safe_keys = array_map(array($GLOBALS['mysqli_link'], "real_escape_string"), array_keys($values));
     $safe_values = array();
     foreach (array_values($values) as $value)
         $safe_values[] = ($value == "now()" ? "now()" :
@@ -300,20 +300,21 @@ function insert_row($table, $values) {
     return mysqli_insert_id($GLOBALS['mysqli_link']);
 }
 
-function update_rows($link, $table, $values, $where) {
+function update_rows($table, $values, $where) {
     list($safe_keys, $safe_values) = get_safe_values($values);
-    $query = "update `" . mysqli_real_escape_string($link, $table) . "` set ";
+    $query = "update `" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $table) . "` set ";
     for ($i = 0; $i < count($safe_keys); $i++)
         $query .= $safe_keys[$i] . "=" . $safe_values[$i] . ", ";
     $query = preg_replace("/, $/", "", $query);
     $query .= " where $where";
-    mysqli_query($link, $query);
+    mysqli_query($GLOBALS['mysqli_link'], $query);
 }
 
-function delete_rows($link, $table, $where="") {
-    $query = "delete from `" . mysql_real_escape_string($table) . "`" .
+function delete_rows($table, $where="") {
+    $query = "delete from `" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $table) . "`" .
         ($where ? " where $where" : "");
-    mysqli_query($link, $query);
+    print_r($query);
+    mysqli_query($GLOBALS['mysqli_link'], $query);
 }
 
 function get_checkboxes($rows, $name, $value, $text, $checked_field="") {
