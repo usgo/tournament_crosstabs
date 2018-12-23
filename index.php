@@ -2,13 +2,9 @@
 include(dirname(__FILE__) . "/conf.php");
 include(dirname(__FILE__) . "/util.php");
 
-// Store the mysql connection as a link to reference.
-$mysqli_link = mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+connect();
 
-// Check the connection for error and die on error.
-if (mysqli_connect_errno()) {
-  die(mysqli_connect_errno());
-}
+
 
 dispatch("Site");
 
@@ -35,7 +31,8 @@ class Site {
         echo "<h2>AGA Tournament Crosstabs</h2>
             <p>Current standings:</p>
             <ul>";
-        $bands = fetch_rows($mysqli_link, "select bid, name from bands");
+
+        $bands = fetch_rows("select bid, name from bands");
         foreach ($bands as $band) {
             echo "<li><a href='" . href("band-matrix/" . $band['bid']) . "'>" .
                 $band['name'] . "</a></li>";

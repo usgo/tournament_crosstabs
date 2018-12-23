@@ -1,4 +1,16 @@
 <?php
+$mysqli_link = null;
+
+function connect() {
+  // Store the mysql connection as a link to reference.
+  $GLOBALS['mysqli_link'] = mysqli_connect(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
+
+  // Check the connection for error and die on error.
+  if (mysqli_connect_errno()) {
+    die(mysqli_connect_errno());
+  }
+}
+
 // Dispatch to a phtml page or to a class method or die
 function dispatch($site_class) {
     $in_path = $_REQUEST['path'];
@@ -239,24 +251,25 @@ function browse_table($select, $base_href="") {
 }
 
 function fetch_row($link, $select) {
-    $res = @mysqli_query($link, $select);
+    $res = mysqli_query($link, $select);
     if (!$res) return null;
     return mysqli_fetch_array($link, $res, MYSQL_ASSOC);
 }
 
-function fetch_rows($link, $select) {
-    $res = @mysqli_query($link, $select);
+function fetch_rows($select) {
+    $res = mysqli_query($GLOBALS['mysqli_link'], $select);
     if (!$res) return array();
     $rows = array();
-    while ($row = mysqli_fetch_array($link, $res, MYSQL_ASSOC))
+    while ($row = mysqli_fetch_array($res)) {
         $rows[] = $row;
+    }
     return $rows;
 }
 
 function fetch_result($link, $select, $row=0, $field=0) {
-    $res = @mysqli_query($link, $select);
+    $res = mysqli_query($link, $select);
     if (!$res) return null;
-    return mysqli_result($res, $row, $field);
+    return mysqli_result($link, $res, $row, $field);
 }
 
 function get_safe_values($link, $values) {
@@ -274,7 +287,7 @@ function insert_row($table, $values) {
     $query = "insert into `" . mysql_real_escape_string($table) . "`" .
         " (" . implode(",", $safe_keys) . ")" .
         " values (" . implode(",", $safe_values) . ")";
-    @mysql_query($query);
+    mysqli_query($query);
     return mysql_insert_id();
 }
 
@@ -285,13 +298,13 @@ function update_rows($link, $table, $values, $where) {
         $query .= $safe_keys[$i] . "=" . $safe_values[$i] . ", ";
     $query = preg_replace("/, $/", "", $query);
     $query .= " where $where";
-    @mysqli_query($link, $query);
+    mysqli_query($link, $query);
 }
 
 function delete_rows($link, $table, $where="") {
     $query = "delete from `" . mysql_real_escape_string($table) . "`" .
         ($where ? " where $where" : "");
-    @mysqli_query($link, $query);
+    mysqli_query($link, $query);
 }
 
 function get_checkboxes($rows, $name, $value, $text, $checked_field="") {
