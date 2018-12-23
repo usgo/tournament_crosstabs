@@ -285,11 +285,16 @@ function fetch_result($select, $row=0, $field=0) {
 
 function get_safe_values($values) {
     // $safe_keys = array_map(array($link ,"mysqli_real_escape_string"), array_keys($values));
-    $safe_keys = array_map(array($GLOBALS['mysqli_link'], "real_escape_string"), array_keys($values));
+    // $safe_keys = array_map(array($GLOBALS['mysqli_link'], "real_escape_string"), array_keys($values));
     $safe_values = array();
-    foreach (array_values($values) as $value)
-        $safe_values[] = ($value == "now()" ? "now()" :
-            "'" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $value) . "'");
+    $safe_keys = array();
+    // foreach (array_values($values) as $value)
+    //     $safe_values[] = ($value == "now()" ? "now()" :
+    //         "'" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $value) . "'");
+    foreach ($values as $key => $value) {
+        $safe_values[] = ($value == "now()" ? "now()" : "'" . mysqli_real_escape_string($GLOBALS['mysqli_link'], $value) . "'");
+        $safe_keys[] = mysqli_real_escape_string($GLOBALS['mysqli_link'], $key);
+    }
     return array($safe_keys, $safe_values);
 }
 

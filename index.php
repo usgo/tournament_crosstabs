@@ -50,7 +50,7 @@ class Site {
     }
 
     // Show all rounds
-    function rounds_browse() {
+    static function rounds_browse() {
         content(
             "Archived Rounds",
             browse_table("select r.rid, concat_ws('', b.name, ', ',
@@ -62,7 +62,7 @@ class Site {
 
     // Show result matrix for the most current rounds (one per band) or for a
     // specific round
-    function rounds_view($rid) {
+    static function rounds_view($rid) {
         head("Round Results");
         if ($rid == "current") {
             $latest_rounds = get_latest_rounds();
@@ -82,7 +82,7 @@ class Site {
     }
 
     // Show full list of players
-    function players_browse() {
+    static function players_browse() {
         content(
             "Players",
             browse_table("select pid, name as player from players order by name", "players/"));
@@ -92,7 +92,7 @@ class Site {
         // TODO: implement and link to this
     }
 
-    function results_browse() {
+    static function results_browse() {
         redir("band-matrix");
     }
 
@@ -568,7 +568,7 @@ class Site {
         return array($player_count, $round_count, $result_count);
     }
 
-    function admin_import_add($values) {
+    static function admin_import_add($values) {
         $bid = intval($values['bid']);
 
         if ($_FILES['file'] && $_FILES['file']['error'] == 0) {
@@ -648,7 +648,7 @@ class Site {
     }
 
     // Delete a player
-    function admin_player_delete() {
+    static function admin_player_delete() {
         $pid = (int)$_POST['pid'];
         delete_rows("players", "pid='$pid'");
         delete_rows("players_to_bands", "pid='$pid'");
@@ -657,7 +657,7 @@ class Site {
     }
 
     // Add new players to a band
-    function admin_bands_edit($bid, $values) {
+    static function admin_bands_edit($bid, $values) {
         insert_new_players($bid, $values['new_players']);
         redir("admin/bands/$bid", true);
     }
@@ -729,7 +729,7 @@ class Site {
     }
 
     // Update a band's player list
-    function admin_rounds_edit($rid, $values) {
+    static function admin_rounds_edit($rid, $values) {
         update_rows("rounds", array(
             "name" => $values['name'],
             "begins" => $values['begins'],
@@ -743,7 +743,7 @@ class Site {
     }
 
     // Show form to add a new round
-    function admin_rounds_add_form() {
+    static function admin_rounds_add_form() {
         head("Add Round");
         ?>
         <form action='<?=href("admin/rounds/add")?>' method='post'>
@@ -778,7 +778,7 @@ class Site {
     }
 
     // Spit out checkboxes for players within a given band
-    function bands_players_checkboxes($bid) {
+    static function bands_players_checkboxes($bid) {
         $player_select = "select p.pid, p.name as player
             from players p join players_to_bands pb on p.pid=pb.pid and pb.bid='$bid'
             order by name";
