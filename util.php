@@ -250,10 +250,10 @@ function browse_table($select, $base_href="") {
     return $retval;
 }
 
-function fetch_row($link, $select) {
-    $res = mysqli_query($link, $select);
+function fetch_row($select) {
+    $res = mysqli_query($GLOBALS['mysqli_link'], $select);
     if (!$res) return null;
-    return mysqli_fetch_array($link, $res, MYSQL_ASSOC);
+    return mysqli_fetch_assoc($res);
 }
 
 function fetch_rows($select) {
@@ -266,8 +266,8 @@ function fetch_rows($select) {
     return $rows;
 }
 
-function fetch_result($link, $select, $row=0, $field=0) {
-    $res = mysqli_query($link, $select);
+function fetch_result($select, $row=0, $field=0) {
+    $res = mysqli_query($GLOBALS['mysqli_link'], $select);
     if (!$res) return null;
     return mysqli_result($link, $res, $row, $field);
 }

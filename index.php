@@ -42,7 +42,7 @@ class Site {
     }
 
     // Show results for all rounds in a band
-    function band_matrix($bid=null) {
+    static function band_matrix($bid=null) {
         if (!$bid)
             $bid = fetch_result("select max(bid) from bands");
         $band = fetch_row("select * from bands where bid='$bid'");
@@ -136,7 +136,7 @@ class Site {
     }
 
     // Admin front page
-    function admin() {
+    static function admin() {
         content(
             "Admin",
             "<ul>
