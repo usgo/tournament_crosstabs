@@ -692,7 +692,7 @@ class Site {
             browse_table("select r.rid, concat_ws('', b.name, ', ',
                 if(r.begins, concat_ws('', date_format(r.begins, '%c/%e'), ' - ', date_format(r.ends, '%c/%e')), r.name)) as round
                 from rounds r join bands b on r.bid=b.bid
-                order by r.begins desc",
+                order by r.rid desc",
                 "admin/rounds/"));
     }
 
