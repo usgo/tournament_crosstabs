@@ -7,7 +7,7 @@ To install:
 - Update conf.php with appropriate values
 - Customize phtml pages
 - Go to the admin section to create bands, players, and rounds
-- Email me at jkkramer@gmail.com if you have any questions
+- Create an issue on Github if you have any questions
 
 
 To setup a new tournament:  
