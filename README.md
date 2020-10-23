@@ -1,4 +1,4 @@
-To install:
+## Installation
 
 - Create a MySQL database and import sql/create.sql
 - Create header and footer html pages
@@ -9,8 +9,7 @@ To install:
 - Go to the admin section to create bands, players, and rounds
 - Create an issue on Github if you have any questions
 
-
-To setup a new tournament:  
+## How to Setup a New Tournament
 1. Login to admin site localhost/admin  
 2. Create new Band [band=tournament]  
 1. Add Band  
